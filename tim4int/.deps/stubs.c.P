@@ -1,2 +1,0 @@
-stubs.c.o: stubs.c
-stubs.c :

@@ -1,2 +1,0 @@
-vectors.S.o: vectors.S
-vectors.S :

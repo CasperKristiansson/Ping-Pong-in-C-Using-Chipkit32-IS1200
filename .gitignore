@@ -1,4 +1,0 @@
-*.c.o
-*.S.o
-outfile*
-/.deps
