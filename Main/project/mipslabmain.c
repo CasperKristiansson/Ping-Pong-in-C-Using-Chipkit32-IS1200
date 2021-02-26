@@ -55,10 +55,10 @@ int main(void) {
 	SPI2CONSET = 0x8000;
 	
 	display_init();
-	display_string(0, "KTH/ICT lab");
-	display_string(1, "in Computer");
-	display_string(2, "Engineering");
-	display_string(3, "Welcome!");
+	display_string(0, "  PONG!");
+	display_string(1, "> Start");
+	display_string(2, "  Modes");
+	display_string(3, "  High Scores");
 	display_update();
 	
 	display_image(96, icon);

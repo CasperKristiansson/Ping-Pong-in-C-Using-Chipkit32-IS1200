@@ -155,8 +155,8 @@ void display_image(int x, const uint8_t *data) {
 		
 		DISPLAY_CHANGE_TO_DATA_MODE;
 		
-		for(j = 0; j < 32; j++)
-			spi_send_recv(~data[i*32 + j]);
+		for(j = 0; j < 128; j++)
+			spi_send_recv(~data[i*128 + j]);
 	}
 }
 

@@ -53,3 +53,4 @@ void time2string( char *, int );
 int getbtns(void);
 int getsw(void);
 void enable_interrupt(void);
+
