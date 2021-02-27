@@ -21,11 +21,13 @@ uint8_t oled_display[512];
 
 //Menu variables
 float current_menu = 1;
+float settings_menu = 0;
 
 //Game specific variables
 float game_active = 0;
 float game_mode = 0;
 float score = 0;
+int ai_difficulty = 4; // 4Easy, 2Medium, 1Hard
 
 //Paddle specific variables
 float paddle_height = 8;
@@ -40,11 +42,11 @@ float paddle2_yPos = 32 / 2 - 2;
 
 //Ball specific variables
 float ball_size = 4;
-float ball_speedx = 0;
+float ball_speedx = 1;
 float ball_speedy = 0;
 
 float ball_xPos = 128 / 2 - 5;
-float ball_yPos = 32 / 2;
+int ball_yPos = 32 / 2;
 
 /* Interrupt Service Routine */
 void user_isr( void )
@@ -113,10 +115,11 @@ void clearDisplay() {
 }
 
 void menu(btns) {
+  delay(200);
   if(current_menu == 1) {
     display_string(0, "> Two Player");
     display_string(1, "  One Player");
-    display_string(2, "  High Scores");
+    display_string(2, "  Settings");
 
     if (btns & 0x1) {
       game_mode = 1;
@@ -127,7 +130,7 @@ void menu(btns) {
   else if(current_menu == 2) {
     display_string(0, "  Two Player");
     display_string(1, "> One Player");
-    display_string(2, "  High Scores");
+    display_string(2, "  Settings");
 
     if (btns & 0x1) {
       game_mode = 2;
@@ -138,16 +141,12 @@ void menu(btns) {
   else if(current_menu == 3) {
     display_string(0, "  Two Player");
     display_string(1, "  One Player");
-    display_string(2, "> High Scores");
+    display_string(2, "> Settings");
 
     if (btns & 0x1) {
-      /*
-
-
-      Need to add high score menu
-
-
-      */
+      settings_menu = 1;
+      current_menu = 1;
+      string_clear();
     }
   }
 
@@ -159,10 +158,64 @@ void menu(btns) {
   }
 
   display_update();
-  delay(100);
 }
 
-void player_movement(btns) {
+void menu_settings(btns) {
+  delay(200);
+  if(current_menu == 1) {
+    display_string(0, ">  Easy");
+    display_string(1, "   Normal");
+    display_string(2, "   Hard");
+    display_string(3, "   Back");
+
+    if (btns & 0x1) {
+      ai_difficulty = 4;
+    }
+  }
+  else if (current_menu == 2) {
+    display_string(0, "   Easy");
+    display_string(1, ">  Normal");
+    display_string(2, "   Hard");
+    display_string(3, "   Back");
+
+    if (btns & 0x1) {
+      ai_difficulty = 2;
+    }
+  }
+  else if (current_menu == 3) {
+    display_string(0, "   Easy");
+    display_string(1, "   Normal");
+    display_string(2, ">  Hard");
+    display_string(3, "   Back");
+
+    if (btns & 0x1) {
+      ai_difficulty = 1;
+    }
+  }
+  else if (current_menu == 4) {
+    display_string(0, "   Easy");
+    display_string(1, "   Normal");
+    display_string(2, "   Hard");
+    display_string(3, ">  Back");
+
+    if (btns & 0x1) {
+      settings_menu = 0;
+      current_menu = 1;
+      string_clear();
+    }
+  }
+
+  if ((btns & 0x2) && (current_menu < 4)) {
+    current_menu++;
+  }
+  if ((btns & 0x4) && (current_menu > 1)) {
+    current_menu--;
+  }
+
+  display_update();
+}
+
+void player_movement_two(btns) {
   if ((btns & 0x1) && (paddle2_yPos < (32 - paddle_height))) {
     paddle2_yPos += paddle_speed;
   }
@@ -178,10 +231,36 @@ void player_movement(btns) {
   }
 }
 
+void player_movement_one(btns) {
+  if ((btns & 0x4) && (paddle1_yPos < (32 - paddle_height))) {
+    paddle1_yPos += paddle_speed;
+  }
+  if ((btns & 0x8) && (paddle1_yPos > 0)) {
+    paddle1_yPos -= paddle_speed;
+  }
+}
+
+/*
+
+bollens y speed fungerar inte riktigt some den ska
+
+*/
 void paddle_hit() {
   if (ball_xPos == paddle_width) {
     if (((ball_yPos + ball_size) > paddle1_yPos) && (ball_yPos) < (paddle1_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
+    
+    if ((ball_yPos + ball_size / 2) < paddle1_yPos + paddle_height / 2 && ball_speedy > -1.5) {
+        ball_speedy -= 0.3;
+    }
+    if ((ball_yPos + ball_size / 2) > paddle1_yPos + paddle_height / 2 && ball_speedy < -1.5) {
+        ball_speedy += 0.3;
+    }
+    /*
+
+    Add increasing ball speed after paddle hit
+
+    */
     }
     else {
       goal(2);
@@ -191,6 +270,18 @@ void paddle_hit() {
   if (ball_xPos == (128 - paddle_width - 4)) {
     if (((ball_yPos + ball_size) > paddle2_yPos) && (ball_yPos) < (paddle2_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
+
+    if ((ball_yPos + ball_size / 2) < paddle2_yPos + paddle_height / 2 && ball_speedy > -1.5) {
+        ball_speedy -= 0.3;
+    }
+    if ((ball_yPos + ball_size / 2) > paddle2_yPos + paddle_height / 2 && ball_speedy < -1.5) {
+        ball_speedy += 0.3;
+    }
+    /*
+
+    Add increasing ball speed after paddle hit
+
+    */
     }
     else {
       goal(1);
@@ -227,6 +318,7 @@ void reset_game() {
   else {
     ball_speedx = 1;
   }
+  ball_speedy = 0;
 
   clearDisplay();
   setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
@@ -247,17 +339,27 @@ void string_clear() {
 }
 
 void ball_movement() {
-  if (!ball_speedx) {
-    ball_speedx = 1;
-    delay(1000);
-  }
   ball_xPos += ball_speedx;
   ball_yPos += ball_speedy;
+
+  if (ball_yPos < 0 || ball_yPos > (31 - ball_size)) {
+    ball_speedy = -(ball_speedy);
+  }
+}
+
+void ai_move() {
+  if ((ball_yPos % ai_difficulty) == 0) {
+    if ((ball_yPos < paddle2_yPos) && (paddle2_yPos > 0)) {
+      paddle2_yPos -= paddle_speed;
+    }
+    if ((ball_yPos > paddle2_yPos) && (paddle2_yPos < (32 - paddle_height))) {
+      paddle2_yPos += paddle_speed;
+    }
+  }
 }
 
 void two_player(btns) {
-
-  player_movement(btns);
+  player_movement_two(btns);
   ball_movement();
   paddle_hit();
 
@@ -270,7 +372,17 @@ void two_player(btns) {
 }
 
 void one_player(btns) {
+  player_movement_one(btns);
+  ai_move();
+  ball_movement();
+  paddle_hit();
 
+  clearDisplay();
+  setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
+  setPixelArray(paddle2_xPos, paddle2_yPos, paddle_width, paddle_height);
+  setPixelArray(ball_xPos, ball_yPos, ball_size, ball_size);
+  translateToImage();
+  display_image(0, oled_display);
 }
 
 /* This function is called repetitively from the main program */
@@ -278,15 +390,18 @@ void labwork(void) {
   int btns = getbtns();
   int sw = getsw();
 
-  if(game_active == 0) {
+  if((!game_active) && (!settings_menu)) {
     menu(btns);
   }
+  if((!game_active) && (settings_menu)) {
+    menu_settings(btns);
+  }
 
-  if((game_active == 1) && (game_mode = 1)){
+  if((game_active) && (game_mode = 1)){
     two_player(btns);
   }
 
-  if((game_active == 1) && (game_mode = 2)){
+  if((game_active) && (game_mode = 2)){
     one_player(btns);
   }
 }
