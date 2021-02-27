@@ -21,6 +21,7 @@ uint8_t oled_display[512];
 
 //Game specific variables
 float game_active = 0;
+float game_started = 0;
 
 //Paddle specific variables
 float paddle_height = 8;
@@ -41,6 +42,8 @@ float ball_speedy = 0;
 
 float ball_xPos = 128 / 2 - 4;
 float ball_yPos = 32 / 2;
+
+
 
 
 /* Interrupt Service Routine */
@@ -136,48 +139,73 @@ void clearDisplay()
   }
 }
 
-/* This function is called repetitively from the main program */
-void labwork(void)
-{
-  int btns = getbtns();
-  int sw = getsw();
-  if (btns & 0x1) {
-    game_active = 1;
-    
-	}
+void menu() {
+  display_string(0, "> PONG!");
+  display_string(1, "  Start");
+  display_string(2, "  Modes");
+  display_string(3, "  High Scores");
+  display_update();
+}
 
-  if(game_active == 1){
-    
+void player_movement(btns) {
+  if ((btns & 0x1) && (paddle2_yPos < (32 - paddle_height))) {
+    paddle2_yPos += paddle_speed;
+  }
+  if ((btns & 0x2) && (paddle2_yPos > 0)) {
+    paddle2_yPos -= paddle_speed;
+  }
+
+  if ((btns & 0x4) && (paddle1_yPos < (32 - paddle_height))) {
+    paddle1_yPos += paddle_speed;
+  }
+  if ((btns & 0x8) && (paddle1_yPos > 0)) {
+    paddle1_yPos -= paddle_speed;
+  }
+}
+
+void ball_movement() {
+  ball_xPos += ball_speedx;
+  ball_yPos += ball_speedy;
+}
+
+void start_game(btns) {
+  if (game_started) {
+    player_movement(btns);
+    ball_movement();
+  }
+  else {
     display_string(0, "");
     display_string(1, "");
     display_string(2, "");
     display_string(3, "");
     display_string(4, "");
     display_update();
-    
-    clearDisplay();
-    setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
-    setPixelArray(paddle2_xPos, paddle2_yPos, paddle_width, paddle_height);
-    translateToImage();
-    display_image(0, oled_display);
+    game_started = 1; 
   }
-  
-    
 
-  /*
-  else if(game_active == 0){
-    //menu();
-    display_string(0, "  PONG!");
-	  display_string(1, "> Start");
-	  display_string(2, "  Modes");
-	  display_string(3, "  High Scores");
-	  display_update();
+  clearDisplay();
+  setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
+  setPixelArray(paddle2_xPos, paddle2_yPos, paddle_width, paddle_height);
+  setPixelArray(ball_xPos, ball_yPos, ball_size, ball_size);
+  translateToImage();
+  display_image(0, oled_display);
+}
+
+/* This function is called repetitively from the main program */
+void labwork(void)
+{
+  int btns = getbtns();
+  int sw = getsw();
+
+  if ((btns & 0x1) && (!game_started)) {
+    game_active = 1;
+	}
+
+  if(game_active == 0) {
+    menu();
   }
-  */
-  
-  
-  delay( 1000 );
-  //*E += 0x1;
-  //display_image(96, icon);
-  
+
+  if(game_active == 1){
+    start_game(btns);
+  }
 }
