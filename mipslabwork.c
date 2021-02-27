@@ -19,9 +19,13 @@
 uint8_t display[32][128];
 uint8_t oled_display[512];
 
+//Menu variables
+float current_menu = 1;
+
 //Game specific variables
 float game_active = 0;
 float game_started = 0;
+float game_mode = 0;
 
 //Paddle specific variables
 float paddle_height = 8;
@@ -139,12 +143,54 @@ void clearDisplay()
   }
 }
 
-void menu() {
-  display_string(0, "> PONG!");
-  display_string(1, "  Start");
-  display_string(2, "  Modes");
-  display_string(3, "  High Scores");
+void menu(btns) {
+  if(current_menu == 1) {
+    display_string(0, "> Two Player");
+    display_string(1, "  One Player");
+    display_string(2, "  High Scores");
+
+    if (btns & 0x1) {
+      game_mode = 1;
+      game_active = 1;
+      string_clear();
+    }
+  }
+  else if(current_menu == 2) {
+    display_string(0, "  Two Player");
+    display_string(1, "> One Player");
+    display_string(2, "  High Scores");
+
+    if (btns & 0x1) {
+      game_mode = 2;
+      game_active = 1;
+      string_clear();
+    }
+  }
+  else if(current_menu == 3) {
+    display_string(0, "  Two Player");
+    display_string(1, "  One Player");
+    display_string(2, "> High Scores");
+
+    if (btns & 0x1) {
+      /*
+
+
+      Need to add high score menu
+
+
+      */
+    }
+  }
+
+  if ((btns & 0x2) && (current_menu < 3)) {
+    current_menu++;
+  }
+  if ((btns & 0x4) && (current_menu > 1)) {
+    current_menu--;
+  }
+
   display_update();
+  delay(200);
 }
 
 void player_movement(btns) {
@@ -163,25 +209,24 @@ void player_movement(btns) {
   }
 }
 
+void string_clear() {
+  display_string(0, "");
+  display_string(1, "");
+  display_string(2, "");
+  display_string(3, "");
+  display_string(4, "");
+  display_update();
+}
+
 void ball_movement() {
   ball_xPos += ball_speedx;
   ball_yPos += ball_speedy;
 }
 
-void start_game(btns) {
-  if (game_started) {
-    player_movement(btns);
-    ball_movement();
-  }
-  else {
-    display_string(0, "");
-    display_string(1, "");
-    display_string(2, "");
-    display_string(3, "");
-    display_string(4, "");
-    display_update();
-    game_started = 1; 
-  }
+void two_player(btns) {
+
+  player_movement(btns);
+  ball_movement();
 
   clearDisplay();
   setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
@@ -191,21 +236,24 @@ void start_game(btns) {
   display_image(0, oled_display);
 }
 
+void one_player(btns) {
+  
+}
+
 /* This function is called repetitively from the main program */
-void labwork(void)
-{
+void labwork(void) {
   int btns = getbtns();
   int sw = getsw();
 
-  if ((btns & 0x1) && (!game_started)) {
-    game_active = 1;
-	}
-
   if(game_active == 0) {
-    menu();
+    menu(btns);
   }
 
-  if(game_active == 1){
-    start_game(btns);
+  if((game_active == 1) && (game_mode = 1)){
+    two_player(btns);
+  }
+
+  if((game_active == 1) && (game_mode = 2)){
+    one_player(btns);
   }
 }
