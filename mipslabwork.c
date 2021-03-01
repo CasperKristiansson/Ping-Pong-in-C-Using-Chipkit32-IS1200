@@ -26,8 +26,10 @@ float settings_menu = 0;
 //Game specific variables
 float game_active = 0;
 float game_mode = 0;
-float score = 0;
+float score_player1 = 0;
+float score_player2 = 0;
 int ai_difficulty = 4; // 4Easy, 2Medium, 1Hard
+int player = 0;
 
 //Paddle specific variables
 float paddle_height = 8;
@@ -47,6 +49,7 @@ float ball_speedy = 0;
 
 float ball_xPos = 128 / 2 - 5;
 int ball_yPos = 32 / 2;
+
 
 /* Interrupt Service Routine */
 void user_isr( void )
@@ -222,7 +225,6 @@ void player_movement_two(btns) {
   if ((btns & 0x2) && (paddle2_yPos > 0)) {
     paddle2_yPos -= paddle_speed;
   }
-
   if ((btns & 0x4) && (paddle1_yPos < (32 - paddle_height))) {
     paddle1_yPos += paddle_speed;
   }
@@ -245,17 +247,18 @@ void player_movement_one(btns) {
 bollens y speed fungerar inte riktigt some den ska
 
 */
-void paddle_hit() {
+void 
+paddle_hit() {
   if (ball_xPos == paddle_width) {
     if (((ball_yPos + ball_size) > paddle1_yPos) && (ball_yPos) < (paddle1_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
     
-    if ((ball_yPos + ball_size / 2) < paddle1_yPos + paddle_height / 2 && ball_speedy > -1.5) {
-        ball_speedy -= 0.3;
-    }
-    if ((ball_yPos + ball_size / 2) > paddle1_yPos + paddle_height / 2 && ball_speedy < -1.5) {
-        ball_speedy += 0.3;
-    }
+      if ((ball_yPos + ball_size / 2) < paddle1_yPos + paddle_height / 2 && ball_speedy > -1.5) {
+          ball_speedy -= 0.3;
+      }
+      if ((ball_yPos + ball_size / 2) > paddle1_yPos + paddle_height / 2 && ball_speedy < -1.5) {
+          ball_speedy += 0.3;
+      }
     /*
 
     Add increasing ball speed after paddle hit
@@ -271,11 +274,11 @@ void paddle_hit() {
     if (((ball_yPos + ball_size) > paddle2_yPos) && (ball_yPos) < (paddle2_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
 
-    if ((ball_yPos + ball_size / 2) < paddle2_yPos + paddle_height / 2 && ball_speedy > -1.5) {
-        ball_speedy -= 0.3;
-    }
-    if ((ball_yPos + ball_size / 2) > paddle2_yPos + paddle_height / 2 && ball_speedy < -1.5) {
-        ball_speedy += 0.3;
+      if ((ball_yPos + ball_size / 2) < paddle2_yPos + paddle_height / 2 && ball_speedy > -1.5) {
+          ball_speedy -= 0.3;
+      }
+      if ((ball_yPos + ball_size / 2) > paddle2_yPos + paddle_height / 2 && ball_speedy < -1.5) {
+          ball_speedy += 0.3;
     }
     /*
 
@@ -291,12 +294,51 @@ void paddle_hit() {
 
 void goal(player) {
   if (player == 1) {
-    score += 1;
+    score_player1 += 1;
   }
   if (player == 2) {
-    score -= 1;
+    score_player2 += 1;
   }
+
+  if (score_player1 == 1) {
+    PORTE |= 0x80;
+  }
+  if (score_player1 == 2){
+    PORTE |= 0xC0;
+  }
+  if (score_player1 == 3){
+    PORTE |= 0xE0;
+  }
+  if (score_player1 == 4){
+    PORTE |= 0xF0;
+    quit();
+  }
+  
+  if (score_player2 == 4){
+    PORTE |= 0x8;
+    quit();
+  }
+  if (score_player2 == 3){
+    PORTE |= 0x4;
+  }
+  if (score_player2 == 2){
+    PORTE |= 0x2;
+  }
+  if (score_player2 == 1){
+    PORTE |= 0x1;
+  }
+
   reset_game();
+}
+
+void quit() {
+  delay(3000);
+  game_active = 0;
+  game_mode = 0;
+
+  clearDisplay();
+  translateToImage();
+  display_image(0, oled_display);
 }
 
 void reset_game() {
@@ -309,10 +351,10 @@ void reset_game() {
   ball_xPos = 128 / 2 - 5;
   ball_yPos = 32 / 2;
 
-  if (score > 0) {
+  if (score_player1 > score_player2) {
     ball_speedx = -1;
   }
-  else if (score < 0) {
+  else if (score_player1 < score_player2) {
     ball_speedx = 1;
   }
   else {
@@ -347,7 +389,7 @@ void ball_movement() {
   }
 }
 
-void ai_move() {
+void ai_move(void) {
   if ((ball_yPos % ai_difficulty) == 0) {
     if ((ball_yPos < paddle2_yPos) && (paddle2_yPos > 0)) {
       paddle2_yPos -= paddle_speed;
@@ -358,8 +400,9 @@ void ai_move() {
   }
 }
 
-void two_player(btns) {
-  player_movement_two(btns);
+void one_player(btns) {
+  player_movement_one(btns);
+  ai_move();
   ball_movement();
   paddle_hit();
 
@@ -371,9 +414,8 @@ void two_player(btns) {
   display_image(0, oled_display);
 }
 
-void one_player(btns) {
-  player_movement_one(btns);
-  ai_move();
+void two_player(btns) {
+  player_movement_two(btns);
   ball_movement();
   paddle_hit();
 
@@ -397,11 +439,11 @@ void labwork(void) {
     menu_settings(btns);
   }
 
-  if((game_active) && (game_mode = 1)){
+  if((game_active) && (game_mode == 1)){
     two_player(btns);
   }
 
-  if((game_active) && (game_mode = 2)){
+  if((game_active) && (game_mode == 2)){
     one_player(btns);
   }
 }

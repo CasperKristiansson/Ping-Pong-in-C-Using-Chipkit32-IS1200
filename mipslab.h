@@ -53,3 +53,7 @@ void time2string( char *, int );
 int getbtns(void);
 int getsw(void);
 void enable_interrupt(void);
+void goal(int);
+void quit(void);
+void reset_game(void);
+void string_clear(void);
