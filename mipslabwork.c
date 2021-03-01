@@ -117,14 +117,15 @@ void clearDisplay() {
   }
 }
 
-void menu(btns) {
+void menu() {
   delay(200);
   if(current_menu == 1) {
     display_string(0, "> Two Player");
     display_string(1, "  One Player");
     display_string(2, "  Settings");
 
-    if (btns & 0x1) {
+    if (getbtns() & 0x1) {
+      reset_game();
       game_mode = 1;
       game_active = 1;
       string_clear();
@@ -135,7 +136,8 @@ void menu(btns) {
     display_string(1, "> One Player");
     display_string(2, "  Settings");
 
-    if (btns & 0x1) {
+    if (getbtns() & 0x1) {
+      reset_game();
       game_mode = 2;
       game_active = 1;
       string_clear();
@@ -146,72 +148,66 @@ void menu(btns) {
     display_string(1, "  One Player");
     display_string(2, "> Settings");
 
-    if (btns & 0x1) {
+    if (getbtns() & 0x1) {
       settings_menu = 1;
       current_menu = 1;
       string_clear();
     }
   }
 
-  if ((btns & 0x2) && (current_menu < 3)) {
+  if ((getbtns() & 0x2) && (current_menu < 3)) {
     current_menu++;
   }
-  if ((btns & 0x4) && (current_menu > 1)) {
+  if ((getbtns() & 0x4) && (current_menu > 1)) {
     current_menu--;
   }
 
   display_update();
 }
 
-void menu_settings(btns) {
+void menu_settings() {
   delay(200);
   if(current_menu == 1) {
     display_string(0, ">  Easy");
     display_string(1, "   Normal");
     display_string(2, "   Hard");
-    display_string(3, "   Back");
 
-    if (btns & 0x1) {
+    if (getbtns() & 0x1) {
       ai_difficulty = 4;
+      settings_menu = 0;
+      current_menu = 1;
+      string_clear();
     }
   }
   else if (current_menu == 2) {
     display_string(0, "   Easy");
     display_string(1, ">  Normal");
     display_string(2, "   Hard");
-    display_string(3, "   Back");
 
-    if (btns & 0x1) {
+    if (getbtns() & 0x1) {
       ai_difficulty = 2;
+      settings_menu = 0;
+      current_menu = 1;
+      string_clear();
     }
   }
   else if (current_menu == 3) {
     display_string(0, "   Easy");
     display_string(1, "   Normal");
     display_string(2, ">  Hard");
-    display_string(3, "   Back");
 
-    if (btns & 0x1) {
+    if (getbtns() & 0x1) {
       ai_difficulty = 1;
-    }
-  }
-  else if (current_menu == 4) {
-    display_string(0, "   Easy");
-    display_string(1, "   Normal");
-    display_string(2, "   Hard");
-    display_string(3, ">  Back");
-
-    if (btns & 0x1) {
       settings_menu = 0;
       current_menu = 1;
       string_clear();
     }
   }
 
-  if ((btns & 0x2) && (current_menu < 4)) {
+  if ((getbtns() & 0x2) && (current_menu < 3)) {
     current_menu++;
   }
-  if ((btns & 0x4) && (current_menu > 1)) {
+  if ((getbtns() & 0x4) && (current_menu > 1)) {
     current_menu--;
   }
 
@@ -333,6 +329,7 @@ void goal(player) {
 
 void quit() {
   delay(3000);
+  PORTE = 0x0;
   game_active = 0;
   game_mode = 0;
 
@@ -431,6 +428,10 @@ void two_player(btns) {
 void labwork(void) {
   int btns = getbtns();
   int sw = getsw();
+
+  if(sw & 0x1) {
+    quit();
+  }
 
   if((!game_active) && (!settings_menu)) {
     menu(btns);
