@@ -55,6 +55,7 @@ float ball_speedy = 0;
 
 int ball_xPos = 128 / 2 - 5;
 int ball_yPos = 32 / 2;
+int count = 0;
 
 
 /* Interrupt Service Routine */
@@ -308,28 +309,6 @@ void paddle2_physics() {
     }
   }
 
-  else {
-    if((ball_yPos + ball_size > paddle2_yPos) && (ball_yPos <= paddle2_yPos + paddle_split1)) {
-      if(ball_speedy == 0) {
-        ball_speedy = -1.41;
-      }
-    }
-    if((ball_yPos > paddle2_yPos + paddle_split1) && (ball_yPos <= paddle2_yPos + paddle_split2)) {
-      if(ball_speedy == 0) {
-        ball_speedy = -0.7;
-      }
-    }
-    if((ball_yPos > paddle2_yPos + paddle_split2) && (ball_yPos <= paddle2_yPos + paddle_split3)) {
-      if(ball_speedy == 0) {
-        ball_speedy = 0.7;
-      }
-    }
-    if((paddle2_yPos + paddle_split4 > ball_yPos + ball_size) && (paddle2_yPos + paddle_split3 < ball_yPos)) {
-      if(ball_speedy == 0) {
-        ball_speedy = 1.41;
-      }
-    }
-  }
 }
 
 void paddle_hit() {
@@ -449,25 +428,20 @@ void ball_movement() {
   ball_xPos += ball_speedx;
   ball_yPos += ball_speedy;
 
-  if (ball_yPos < 0 || ball_yPos > (31 - ball_size)) {
+  if (ball_yPos < 1 || ball_yPos > (31 - ball_size)) {
     ball_speedy = -(ball_speedy);
   }
-
-
-  // if (ball_yPos < 7) {
-  //   display_string(2, "2222222");
-  //   if ((ball_speedy > -0.25 && ball_speedy <= 0) || (ball_speedy < 0.25 && ball_speedy >= 0)) {
-  //     display_string(2, "333333");
-  //     if (ball_speedy == 0) {
-  //       ball_speedy == 0.01;
-  //       display_string(2, "hhhhhhhh");
-  //     }
-  //     else {
-  //       ball_speedy *= 1.015;
-  //       display_string(2, "11111111");
-  //     }
-  //   }
-  // }
+  
+   if((ball_speedy < 0.3) && (ball_yPos <= 10)) {
+     count++;
+     if(count >= 10){
+       ball_speedy = 1;
+       count = 0;
+     }
+   }
+   else{
+     count = 0;
+   }
 }
 
 void ai_move(void) {
