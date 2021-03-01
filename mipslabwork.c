@@ -43,10 +43,6 @@ float paddle2_down = 0;
 float paddle1_up = 0;
 float paddle1_down = 0;
 
-float paddle_split1 = 2;
-float paddle_split2 = 4;
-float paddle_split3 = 6;
-float paddle_split4 = 8;
 
 //Ball specific variables
 float ball_size = 2;
@@ -56,6 +52,12 @@ float ball_speedy = 0;
 int ball_xPos = 128 / 2 - 5;
 int ball_yPos = 32 / 2;
 int count = 0;
+
+int i = 0;
+int j = 0;
+int k = 0;
+int m = 0;
+
 
 
 /* Interrupt Service Routine */
@@ -282,6 +284,23 @@ void paddle1_physics() {
       ball_speedy = 1;
     }
   }
+  
+  if((ball_yPos + ball_size > paddle1_yPos) && (ball_yPos <= paddle1_yPos + 2)){
+      ball_speedy += -0.7;
+  }
+
+  if((ball_yPos > paddle1_yPos + 2) && (ball_yPos <= paddle1_yPos + 4)){
+      ball_speedy += -0.35;
+  }
+
+  if((ball_yPos > paddle1_yPos + 4) && (ball_yPos <= paddle1_yPos + 6)){
+      ball_speedy += 0.35;
+  }
+
+  if((ball_yPos > paddle1_yPos + 6) && (ball_yPos - ball_size < paddle1_yPos + 8)){
+      ball_speedy += 0.7;
+  }
+
 }
 
 void paddle2_physics() {
@@ -309,11 +328,26 @@ void paddle2_physics() {
     }
   }
 
+  if((ball_yPos + ball_size > paddle2_yPos) && (ball_yPos <= paddle2_yPos + 2)){
+      ball_speedy += -0.7;
+  }
+
+  if((ball_yPos > paddle2_yPos + 2) && (ball_yPos <= paddle2_yPos + 4)){
+      ball_speedy += -0.35;
+  }
+  if((ball_yPos > paddle2_yPos + 4) && (ball_yPos <= paddle2_yPos + 6)){
+      ball_speedy += 0.35;
+  }
+  if((ball_yPos > paddle2_yPos + 6) && (ball_yPos - ball_size < paddle2_yPos + 8)){
+      ball_speedy += 0.7;
+  }
+  
 }
+
 
 void paddle_hit() {
   if (ball_xPos == paddle_width) {
-    if (((ball_yPos + ball_size) > paddle1_yPos) && (ball_yPos) < (paddle1_yPos + paddle_height)) {
+    if (((ball_yPos + ball_size) > paddle1_yPos) && (ball_yPos - ball_size) < (paddle1_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
       paddle1_physics();
     }
@@ -323,7 +357,7 @@ void paddle_hit() {
   }
 
   if (ball_xPos == (128 - paddle_width - 4)) {
-    if (((ball_yPos + ball_size) > paddle2_yPos) && (ball_yPos) < (paddle2_yPos + paddle_height)) {
+    if (((ball_yPos + ball_size) > paddle2_yPos) && (ball_yPos - ball_size) < (paddle2_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
       paddle2_physics();
     }
@@ -336,9 +370,15 @@ void paddle_hit() {
 void goal(player) {
   if (player == 1) {
     score_player1 += 1;
+    display_string(2, "Player 1 scored!");
+    display_update(); 
+    delay(2000);
   }
   if (player == 2) {
     score_player2 += 1;
+    display_string(2, "Player 2 scored!"); 
+    display_update();
+    delay(2000);
   }
 
   if (score_player1 == 1) {
@@ -386,6 +426,10 @@ void quit() {
 }
 
 void reset_game() {
+  i = 0;
+  j = 0;
+  k = 0;
+  m = 0;
   paddle1_xPos = 0;
   paddle1_yPos = 32 / 2 - 2;
 
@@ -479,6 +523,37 @@ void two_player(btns) {
   paddle_hit();
 
   clearDisplay();
+
+  if((ball_yPos + ball_size > paddle1_yPos) && (ball_yPos <= paddle1_yPos + 2) && (ball_xPos == paddle_width)){
+      i = 1;
+  }
+  if((ball_yPos > paddle1_yPos + 2) && (ball_yPos <= paddle1_yPos + 4) && (ball_xPos == paddle_width)){
+      j = 1;
+  }
+  if((ball_yPos > paddle1_yPos + 4) && (ball_yPos <= paddle1_yPos + 6) && (ball_xPos == paddle_width)){
+      k = 1;
+  }
+  if((ball_yPos > paddle1_yPos + 6) && (ball_yPos - ball_size < paddle1_yPos + 8) && (ball_xPos == paddle_width)){
+      m = 1;
+  }
+  if(i){
+    setPixelArray(10, 10, 2, 2);
+  }
+  
+  if(j){
+    setPixelArray(50, 10, 2, 2);
+  }
+  
+  if(k){
+    setPixelArray(90, 10, 2, 2);
+  }
+  
+  if(m){
+    setPixelArray(120, 10, 2, 2);
+  }
+
+
+
   setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
   setPixelArray(paddle2_xPos, paddle2_yPos, paddle_width, paddle_height);
   setPixelArray(ball_xPos, ball_yPos, ball_size, ball_size);
