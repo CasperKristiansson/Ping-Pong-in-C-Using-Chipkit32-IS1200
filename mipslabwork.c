@@ -1,13 +1,9 @@
 /* mipslabwork.c
-
    This file written 2015 by F Lundevall
    Updated 2017-04-21 by F Lundevall
-
    This file should be changed by YOU! So you must
    add comment(s) here with your name(s) and date(s):
-
    This file modified 2017-04-31 by Ture Teknolog 
-
    For copyright and licensing, see file COPYING */
 
 #include <stdint.h>
@@ -28,8 +24,8 @@ float game_active = 0;
 float game_mode = 0;
 float score_player1 = 0;
 float score_player2 = 0;
-int ai_difficulty = 4; // 4Easy, 2Medium, 1Hard
-int player = 0;
+int ai_difficulty = 16; // 4Easy, 2Medium, 1Hard
+float player = 0;
 
 //Paddle specific variables
 float paddle_height = 8;
@@ -42,12 +38,22 @@ float paddle1_yPos = 32 / 2 - 2;
 float paddle2_xPos = 128 - 4;
 float paddle2_yPos = 32 / 2 - 2;
 
+float paddle2_up = 0;
+float paddle2_down = 0;
+float paddle1_up = 0;
+float paddle1_down = 0;
+
+float paddle_split1 = 2;
+float paddle_split2 = 4;
+float paddle_split3 = 6;
+float paddle_split4 = 8;
+
 //Ball specific variables
-float ball_size = 4;
+float ball_size = 2;
 float ball_speedx = 1;
 float ball_speedy = 0;
 
-float ball_xPos = 128 / 2 - 5;
+int ball_xPos = 128 / 2 - 5;
 int ball_yPos = 32 / 2;
 
 
@@ -215,76 +221,136 @@ void menu_settings() {
 }
 
 void player_movement_two(btns) {
+  paddle2_up = 0;
+  paddle2_down = 0;
+  paddle1_up = 0;
+  paddle1_down = 0;
+
   if ((btns & 0x1) && (paddle2_yPos < (32 - paddle_height))) {
     paddle2_yPos += paddle_speed;
+    paddle2_up = 1;
   }
   if ((btns & 0x2) && (paddle2_yPos > 0)) {
     paddle2_yPos -= paddle_speed;
+    paddle2_down = 1;
   }
   if ((btns & 0x4) && (paddle1_yPos < (32 - paddle_height))) {
     paddle1_yPos += paddle_speed;
+    paddle1_up = 1;
   }
   if ((btns & 0x8) && (paddle1_yPos > 0)) {
     paddle1_yPos -= paddle_speed;
+    paddle1_down = 1;
   }
 }
 
 void player_movement_one(btns) {
+  paddle1_up = 0;
+  paddle1_down = 0;
   if ((btns & 0x4) && (paddle1_yPos < (32 - paddle_height))) {
     paddle1_yPos += paddle_speed;
+    paddle1_down = 1;
   }
   if ((btns & 0x8) && (paddle1_yPos > 0)) {
     paddle1_yPos -= paddle_speed;
+    paddle1_up = 1;
   }
 }
 
-/*
+void paddle1_physics() {
+  if(paddle1_up == 1) {
+    if(ball_speedy < 0) {
+      ball_speedy = ball_speedy * 2;
+    }
+    else if(ball_speedy > 0) {
+      ball_speedy = ball_speedy / 2;
+    }
+    else {
+      ball_speedy = -1;
+    }
+  }
 
-bollens y speed fungerar inte riktigt some den ska
+  if(paddle1_down == 1) {
+    if(ball_speedy < 0) {
+      ball_speedy = ball_speedy / 2;
+    }
+    else if(ball_speedy > 0) {
+      ball_speedy = ball_speedy * 2;
+    }
+    else {
+      ball_speedy = 1;
+    }
+  }
+}
 
-*/
-void 
-paddle_hit() {
+void paddle2_physics() {
+  if(paddle2_up == 1) {
+    if(ball_speedy < 0) {
+      ball_speedy = ball_speedy * 2;
+    }
+    else if(ball_speedy > 0) {
+      ball_speedy = ball_speedy / 2;
+    }
+    else {
+      ball_speedy = -1;
+    }
+  }
+
+  else if(paddle2_down == 1) {
+    if(ball_speedy < 0) {
+      ball_speedy = ball_speedy / 2;
+    }
+    else if(ball_speedy > 0) {
+      ball_speedy = ball_speedy * 2;
+    }
+    else {
+      ball_speedy = 1;
+    }
+  }
+
+  else {
+    if((ball_yPos + ball_size > paddle2_yPos) && (ball_yPos <= paddle2_yPos + paddle_split1)) {
+      if(ball_speedy == 0) {
+        ball_speedy = -1.41;
+      }
+    }
+    if((ball_yPos > paddle2_yPos + paddle_split1) && (ball_yPos <= paddle2_yPos + paddle_split2)) {
+      if(ball_speedy == 0) {
+        ball_speedy = -0.7;
+      }
+    }
+    if((ball_yPos > paddle2_yPos + paddle_split2) && (ball_yPos <= paddle2_yPos + paddle_split3)) {
+      if(ball_speedy == 0) {
+        ball_speedy = 0.7;
+      }
+    }
+    if((paddle2_yPos + paddle_split4 > ball_yPos + ball_size) && (paddle2_yPos + paddle_split3 < ball_yPos)) {
+      if(ball_speedy == 0) {
+        ball_speedy = 1.41;
+      }
+    }
+  }
+}
+
+void paddle_hit() {
   if (ball_xPos == paddle_width) {
     if (((ball_yPos + ball_size) > paddle1_yPos) && (ball_yPos) < (paddle1_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
-    
-      if ((ball_yPos + ball_size / 2) < paddle1_yPos + paddle_height / 2 && ball_speedy > -1.5) {
-          ball_speedy -= 0.3;
-      }
-      if ((ball_yPos + ball_size / 2) > paddle1_yPos + paddle_height / 2 && ball_speedy < -1.5) {
-          ball_speedy += 0.3;
-      }
-    /*
-
-    Add increasing ball speed after paddle hit
-
-    */
+      paddle1_physics();
     }
-    else {
-      goal(2);
-    }
+  }
+  else if(ball_xPos < -21) {
+    goal(2);
   }
 
   if (ball_xPos == (128 - paddle_width - 4)) {
     if (((ball_yPos + ball_size) > paddle2_yPos) && (ball_yPos) < (paddle2_yPos + paddle_height)) {
       ball_speedx = -(ball_speedx);
-
-      if ((ball_yPos + ball_size / 2) < paddle2_yPos + paddle_height / 2 && ball_speedy > -1.5) {
-          ball_speedy -= 0.3;
-      }
-      if ((ball_yPos + ball_size / 2) > paddle2_yPos + paddle_height / 2 && ball_speedy < -1.5) {
-          ball_speedy += 0.3;
+      paddle2_physics();
     }
-    /*
-
-    Add increasing ball speed after paddle hit
-
-    */
-    }
-    else {
-      goal(1);
-    }
+  }
+  else if (ball_xPos > 138) {
+    goal(1);
   }
 }
 
@@ -332,6 +398,8 @@ void quit() {
   PORTE = 0x0;
   game_active = 0;
   game_mode = 0;
+  score_player1 = 0;
+  score_player2 = 0;
 
   clearDisplay();
   translateToImage();
@@ -384,15 +452,35 @@ void ball_movement() {
   if (ball_yPos < 0 || ball_yPos > (31 - ball_size)) {
     ball_speedy = -(ball_speedy);
   }
+
+
+  // if (ball_yPos < 7) {
+  //   display_string(2, "2222222");
+  //   if ((ball_speedy > -0.25 && ball_speedy <= 0) || (ball_speedy < 0.25 && ball_speedy >= 0)) {
+  //     display_string(2, "333333");
+  //     if (ball_speedy == 0) {
+  //       ball_speedy == 0.01;
+  //       display_string(2, "hhhhhhhh");
+  //     }
+  //     else {
+  //       ball_speedy *= 1.015;
+  //       display_string(2, "11111111");
+  //     }
+  //   }
+  // }
 }
 
 void ai_move(void) {
+  paddle2_down = 0;
+  paddle2_up = 0;
   if ((ball_yPos % ai_difficulty) == 0) {
     if ((ball_yPos < paddle2_yPos) && (paddle2_yPos > 0)) {
       paddle2_yPos -= paddle_speed;
+      paddle2_up = 1;
     }
     if ((ball_yPos > paddle2_yPos) && (paddle2_yPos < (32 - paddle_height))) {
       paddle2_yPos += paddle_speed;
+      paddle2_down = 1;
     }
   }
 }
