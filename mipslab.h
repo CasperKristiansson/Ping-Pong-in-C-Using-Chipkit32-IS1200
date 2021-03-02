@@ -57,3 +57,5 @@ void goal(int);
 void quit(void);
 void reset_game(void);
 void string_clear(void);
+void player1_win(void);
+void player2_win(void);

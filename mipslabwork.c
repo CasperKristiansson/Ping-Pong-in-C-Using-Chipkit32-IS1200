@@ -4,6 +4,7 @@
    This file should be changed by YOU! So you must
    add comment(s) here with your name(s) and date(s):
    This file modified 2017-04-31 by Ture Teknolog 
+   Thias file modified 2021-03-02 by Casper Kristiansson and Hampus Nilsson
    For copyright and licensing, see file COPYING */
 
 #include <stdint.h>
@@ -57,6 +58,7 @@ int i = 0;
 int j = 0;
 int k = 0;
 int m = 0;
+int light_counter = 0;
 
 
 
@@ -194,7 +196,7 @@ void menu_settings() {
     display_string(2, "   Hard");
 
     if (getbtns() & 0x1) {
-      ai_difficulty = 2;
+      ai_difficulty = 3;
       settings_menu = 0;
       current_menu = 1;
       string_clear();
@@ -392,12 +394,12 @@ void goal(player) {
   }
   if (score_player1 == 4){
     PORTE |= 0xF0;
-    quit();
+    player1_win();
   }
   
   if (score_player2 == 4){
     PORTE |= 0x8;
-    quit();
+    player2_win();
   }
   if (score_player2 == 3){
     PORTE |= 0x4;
@@ -412,6 +414,40 @@ void goal(player) {
   reset_game();
 }
 
+void player1_win(){
+  display_string(2, "Player 1 wins!");
+  display_update();
+  PORTE = 0;
+  for(light_counter = 256; light_counter >= 1; light_counter/=2){
+    delay(150);
+    PORTESET = light_counter;
+  }
+  delay(100);
+  PORTE = 0;
+  delay(300);
+  PORTESET = 511;
+
+  delay(1000);
+  quit();
+
+}
+
+void player2_win(){
+  display_string(2, "Player 2 wins!");
+  display_update();
+  PORTE = 1;
+  for(light_counter = 2; light_counter < 256; light_counter*=2){
+    delay(150);
+    PORTESET = light_counter;
+  }
+  delay(100);
+  PORTE = 0;
+  delay(300);
+  PORTESET = 511;
+  
+  delay(1000);
+  quit();
+}
 void quit() {
   delay(3000);
   PORTE = 0x0;
@@ -471,6 +507,12 @@ void string_clear() {
 void ball_movement() {
   ball_xPos += ball_speedx;
   ball_yPos += ball_speedy;
+  if(ball_speedy > 1.7){
+    ball_speedy = 1.7;
+  }
+  if(ball_speedy < -1.7){
+    ball_speedy = -1.7;
+  }
 
   if (ball_yPos < 1 || ball_yPos > (31 - ball_size)) {
     ball_speedy = -(ball_speedy);
@@ -524,6 +566,7 @@ void two_player(btns) {
 
   clearDisplay();
 
+  /*
   if((ball_yPos + ball_size > paddle1_yPos) && (ball_yPos <= paddle1_yPos + 2) && (ball_xPos == paddle_width)){
       i = 1;
   }
@@ -551,7 +594,7 @@ void two_player(btns) {
   if(m){
     setPixelArray(120, 10, 2, 2);
   }
-
+  */
 
 
   setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
