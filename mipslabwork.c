@@ -27,7 +27,8 @@ float score_player1 = 0;
 float score_player2 = 0;
 int ai_difficulty = 16; // 4Easy, 2Medium, 1Hard
 float player = 0;
-
+int light_counter = 0;
+int player_lives = 3;
 //Paddle specific variables
 float paddle_height = 8;
 float paddle_width = 3;
@@ -58,7 +59,7 @@ int i = 0;
 int j = 0;
 int k = 0;
 int m = 0;
-int light_counter = 0;
+
 
 
 
@@ -166,7 +167,20 @@ void menu() {
     }
   }
 
-  if ((getbtns() & 0x2) && (current_menu < 3)) {
+  else if(current_menu == 4) {
+    display_string(0, "  One Player");
+    display_string(1, "  Settings");
+    display_string(2, "> Score Mode");
+
+    if (getbtns() & 0x1) {
+      reset_game();
+      game_mode = 3;
+      game_active = 1;
+      string_clear();
+    }
+  }
+
+  if ((getbtns() & 0x2) && (current_menu < 4)) {
     current_menu++;
   }
   if ((getbtns() & 0x4) && (current_menu > 1)) {
@@ -369,46 +383,146 @@ void paddle_hit() {
   }
 }
 
+void lives_animation(int lives_left){
+  switch(lives_left){
+    case 3:
+      display_string(2, "Lives left: 3");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 3");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 3");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 2");
+      display_update();
+      delay(800);
+      break;
+
+      case 2:
+      display_string(2, "Lives left: 2");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 2");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 2");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 1");
+      display_update();
+      delay(800);
+      break;
+
+      case 1:
+      display_string(2, "Lives left: 1");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 1");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 1");
+      display_update();
+      delay(500);
+      string_clear();
+      delay(200);
+      display_string(2, "Lives left: 0");
+      display_update();
+      delay(800);
+      break;
+  }
+}
+
 void goal(player) {
-  if (player == 1) {
+  //For score mode
+  if((player == 1) && (game_mode == 3)){
+    score_player1 += 1;
+    PORTE += 1;
+    if(score_player1 <= 3){
+      ai_difficulty = 4;
+    }
+    else if((score_player1 > 3) && (score_player1 < 5)){
+      ai_difficulty = 3;
+    }
+    else if(score_player1 > 5){
+      ai_difficulty = 1;
+    }
+  }
+  if((player == 2) && (game_mode == 3)){
+    
+    if(player_lives == 3){
+      lives_animation(3);
+      player_lives--;
+    }
+    else if(player_lives == 2){
+      lives_animation(2);
+      player_lives--;
+    }
+    else if(player_lives == 1){
+     lives_animation(1);
+     player_lives--;
+    }
+    else if(player_lives == 0){
+      ai_win();
+    }
+  }
+  else if (player == 1) {
     score_player1 += 1;
     display_string(2, "Player 1 scored!");
     display_update(); 
     delay(2000);
   }
-  if (player == 2) {
+  else if (player == 2) {
     score_player2 += 1;
     display_string(2, "Player 2 scored!"); 
     display_update();
     delay(2000);
   }
+  if(game_mode != 3){
+    if (score_player1 == 1) {
+      PORTE |= 0x80;
+    }
+    if (score_player1 == 2){
+      PORTE |= 0xC0;
+    }
+    if (score_player1 == 3){
+      PORTE |= 0xE0;
+    }
+    if (score_player1 == 4){
+      PORTE |= 0xF0;
+      player1_win();
+    }
 
-  if (score_player1 == 1) {
-    PORTE |= 0x80;
-  }
-  if (score_player1 == 2){
-    PORTE |= 0xC0;
-  }
-  if (score_player1 == 3){
-    PORTE |= 0xE0;
-  }
-  if (score_player1 == 4){
-    PORTE |= 0xF0;
-    player1_win();
-  }
-  
-  if (score_player2 == 4){
-    PORTE |= 0x8;
-    player2_win();
-  }
-  if (score_player2 == 3){
-    PORTE |= 0x4;
-  }
-  if (score_player2 == 2){
-    PORTE |= 0x2;
-  }
-  if (score_player2 == 1){
-    PORTE |= 0x1;
+    if (score_player2 == 4){
+      PORTE |= 0x8;
+      player2_win();
+    }
+    if (score_player2 == 3){
+      PORTE |= 0x4;
+    }
+    if (score_player2 == 2){
+      PORTE |= 0x2;
+    }
+    if (score_player2 == 1){
+      PORTE |= 0x1;
+    }
   }
 
   reset_game();
@@ -444,7 +558,23 @@ void player2_win(){
   PORTE = 0;
   delay(300);
   PORTESET = 511;
-  
+
+  delay(1000);
+  quit();
+}
+void ai_win(){
+  display_string(2, "AI wins");
+  display_update();
+  PORTE = 0;
+  for(light_counter = 256; light_counter >= 1; light_counter/=2){
+    delay(150);
+    PORTESET = light_counter;
+  }
+  delay(100);
+  PORTE = 0;
+  delay(300);
+  PORTESET = 511;
+
   delay(1000);
   quit();
 }
@@ -559,6 +689,20 @@ void one_player(btns) {
   display_image(0, oled_display);
 }
 
+void score_mode(btns) {
+  player_movement_one(btns);
+  ai_move();
+  ball_movement();
+  paddle_hit();
+
+  clearDisplay();
+  setPixelArray(paddle1_xPos, paddle1_yPos, paddle_width, paddle_height);
+  setPixelArray(paddle2_xPos, paddle2_yPos, paddle_width, paddle_height);
+  setPixelArray(ball_xPos, ball_yPos, ball_size, ball_size);
+  translateToImage();
+  display_image(0, oled_display);
+}
+
 void two_player(btns) {
   player_movement_two(btns);
   ball_movement();
@@ -626,5 +770,8 @@ void labwork(void) {
 
   if((game_active) && (game_mode == 2)){
     one_player(btns);
+  }
+  if((game_active) && (game_mode == 3)){
+    score_mode(btns);
   }
 }
