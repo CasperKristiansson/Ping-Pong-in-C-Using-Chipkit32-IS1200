@@ -49,13 +49,80 @@ extern char textbuffer[4][16];
 /* Written as part of asm lab: delay, time2string */
 void delay(int);
 void time2string( char *, int );
+
+extern uint8_t display[32][128];
+extern uint8_t oled_display[512];
+
 /* Written as part of i/o lab: getbtns, getsw, enable_interrupt */
 int getbtns(void);
 int getsw(void);
 void enable_interrupt(void);
+
+//Gamemode functions
+void one_player(int);
+void score_mode(int);
+void two_player(int);
+
+//Move functions
+void player_movement_one(int);
+void player_movement_two(int);
+void ball_movement(void);
+void ai_move(void);
+
+//Display functions
+void translateToImage(void);
+void setPixelArray(int, int, int, int);
+void clearDisplay(void);
+
+//Menu functions
+void menu(int);
+void menu_settings(int);
+
 void goal(int);
 void quit(void);
 void reset_game(void);
 void string_clear(void);
 void player1_win(void);
 void player2_win(void);
+void ai_win(void);
+
+
+//Menu specific variables
+extern float current_menu;
+extern float settings_menu;
+
+//Game specific variables
+extern float game_active;
+extern float game_mode;
+extern float score_player1;
+extern float score_player2;
+extern int ai_difficulty; // 4Easy, 2Medium, 1Hard
+extern float player;
+extern int light_counter;
+extern int player_lives;
+
+
+//Paddle specific variables
+extern float paddle_height;
+extern float paddle_width;
+extern float paddle_speed;
+
+extern float paddle1_xPos;
+extern float paddle1_yPos;
+
+extern float paddle2_xPos;
+extern float paddle2_yPos;
+
+extern float paddle2_up;
+extern float paddle2_down;
+extern float paddle1_up;
+extern float paddle1_down;
+
+//Ball specific variables
+extern float ball_size;
+extern float ball_speedx;
+extern float ball_speedy;
+
+extern int ball_xPos;
+extern int ball_yPos;
+extern int count;
