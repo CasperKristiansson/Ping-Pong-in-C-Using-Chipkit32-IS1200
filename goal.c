@@ -152,7 +152,7 @@ void goal(player) {
     }
   }
   
-  if(game_mode != 3){
+  if((game_mode != 3) && (!initial_active)){
     if (score_player1 == 1) {
       PORTE |= 0x80;
     }

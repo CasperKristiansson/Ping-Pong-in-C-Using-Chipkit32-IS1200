@@ -28,12 +28,12 @@ void quit_ai() {
   game_mode = 0;
   player_lives = 3;
   score_player2 = 0;
-  initial_active = 1;
   
   string_clear();
   clearDisplay();
   translateToImage();
   display_image(0, oled_display);
+  initial_active = 1;
 }
 
 

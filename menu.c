@@ -146,9 +146,9 @@ void menu_settings(int btns) {
 void highscore_menu (int btns) {
   delay(200);
   string_clear();
-  display_string(0, highscore_1);
-  display_string(1, highscore_2);
-  display_string(2, highscore_3);
+  display_string(1, highscore_1);
+  display_string(2, highscore_2);
+  display_string(3, highscore_3);
   display_update();
   delay(500);
 
