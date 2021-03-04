@@ -5,10 +5,13 @@
 #include <stdlib.h>
 
 void quit() {
-  delay(3000);
+  delay(1000);
   PORTE = 0x0;
+
+  ai_difficulty = 4;
   game_active = 0;
   game_mode = 0;
+  player_lives = 3;
   score_player1 = 0;
   score_player2 = 0;
 

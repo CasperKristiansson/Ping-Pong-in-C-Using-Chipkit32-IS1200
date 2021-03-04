@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 void lives_animation(int lives_left){
   switch(lives_left){
     case 3:
@@ -73,20 +74,65 @@ void lives_animation(int lives_left){
 
 void goal(player) {
   //For score mode
-  if((player == 1) && (game_mode == 3)){
+
+  if (player == 1) {
     score_player1 += 1;
-    PORTE += 1;
-    if(score_player1 <= 5){
+    display_string(2, "Player 1 scored!");
+    display_update(); 
+    delay(2000);
+  }
+  if ((player == 2) && (game_mode != 3)) {
+    score_player2 += 1;
+    display_string(2, "Player 2 scored!"); 
+    display_update();
+    delay(2000);
+  }
+
+  else if((player == 1) && (game_mode == 3)) {
+    switch(score_player1){
+        case 4:
+            PORTESET = 1;
+            break;
+        case 8:
+            PORTESET = 3;
+            break;
+        case 12:
+            PORTESET = 7;
+            break;
+        case 16:
+            PORTESET = 15;
+            break;
+        case 20:
+            PORTESET = 31;
+            break;
+        case 24:
+            PORTESET = 63;
+            break;
+        case 28:
+            PORTESET = 127;
+            break;
+        case 32:
+            PORTESET = 255;
+            break;
+    }
+
+    if(score_player1 <= 7){
       ai_difficulty = 4;
     }
-    else if((score_player1 > 5) && (score_player1 < 10)){
+    else if((score_player1 > 7) && (score_player1 <= 16)){
       ai_difficulty = 3;
     }
-    else if(score_player1 >=10){
+    else if((score_player1 > 16) && (score_player1 <= 24)){
+        ai_difficulty = 2;
+    }
+    else if(score_player1 >24){
       ai_difficulty = 1;
     }
+    if(score_player1 == 32){
+        player1_win();
+    }
   }
-  if((player == 2) && (game_mode == 3)){
+  else if((player == 2) && (game_mode == 3)){
     
     if(player_lives == 3){
       lives_animation(3);
@@ -104,18 +150,7 @@ void goal(player) {
       ai_win();
     }
   }
-  else if (player == 1) {
-    score_player1 += 1;
-    display_string(2, "Player 1 scored!");
-    display_update(); 
-    delay(2000);
-  }
-  else if (player == 2) {
-    score_player2 += 1;
-    display_string(2, "Player 2 scored!"); 
-    display_update();
-    delay(2000);
-  }
+  
   if(game_mode != 3){
     if (score_player1 == 1) {
       PORTE |= 0x80;

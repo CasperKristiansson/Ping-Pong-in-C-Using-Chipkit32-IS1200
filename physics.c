@@ -51,6 +51,23 @@ void paddle1_physics() {
 }
 
 void paddle2_physics() {
+
+ if((ball_yPos + ball_size > paddle2_yPos) && (ball_yPos <= paddle2_yPos + 3)){
+      ball_speedy += -0.7;
+  }
+  /*
+  if((ball_yPos > paddle2_yPos + 2) && (ball_yPos <= paddle2_yPos + 4)){
+      ball_speedy += -0.35;
+  }
+  if((ball_yPos > paddle2_yPos + 4) && (ball_yPos <= paddle2_yPos + 6)){
+      ball_speedy += 0.35;
+  }
+  */
+  if((ball_yPos > paddle2_yPos + 5) && (ball_yPos - ball_size < paddle2_yPos + 8)){
+      ball_speedy += 0.7;
+  }
+
+
   if(paddle2_up == 1) {
     if(ball_speedy < 0) {
       ball_speedy = ball_speedy * 2;
@@ -73,20 +90,6 @@ void paddle2_physics() {
     else {
       ball_speedy = 1;
     }
-  }
-
-  if((ball_yPos + ball_size > paddle2_yPos) && (ball_yPos <= paddle2_yPos + 2)){
-      ball_speedy += -0.7;
-  }
-
-  if((ball_yPos > paddle2_yPos + 2) && (ball_yPos <= paddle2_yPos + 4)){
-      ball_speedy += -0.35;
-  }
-  if((ball_yPos > paddle2_yPos + 4) && (ball_yPos <= paddle2_yPos + 6)){
-      ball_speedy += 0.35;
-  }
-  if((ball_yPos > paddle2_yPos + 6) && (ball_yPos - ball_size < paddle2_yPos + 8)){
-      ball_speedy += 0.7;
   }
   
 }

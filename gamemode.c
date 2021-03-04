@@ -7,7 +7,7 @@
 //Game specific variables
 float game_active = 0;
 float game_mode = 0;
-float score_player1 = 0;
+int score_player1 = 0;
 float score_player2 = 0;
 int ai_difficulty = 16; // 4Easy, 2Medium, 1Hard
 float player = 0;

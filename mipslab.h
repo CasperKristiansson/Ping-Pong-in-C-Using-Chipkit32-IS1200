@@ -94,7 +94,7 @@ extern float settings_menu;
 //Game specific variables
 extern float game_active;
 extern float game_mode;
-extern float score_player1;
+extern int score_player1;
 extern float score_player2;
 extern int ai_difficulty; // 4Easy, 2Medium, 1Hard
 extern float player;
