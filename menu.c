@@ -9,7 +9,7 @@
 float current_menu = 1;
 float settings_menu = 0;
 
-char c = "A";
+char c = 'A';
 int initials_menu = 1;
 char initial_1;
 char initial_2;
@@ -156,31 +156,31 @@ void initial_select(int btns) {
   delay(200);
 
   if (initials_menu == 1) {
-    display_string(0, c);
-    display_string(1, initial_2);
-    display_string(2, initial_3);
+    display_string(0, &c);
+    display_string(1, &initial_2);
+    display_string(2, &initial_3);
 
       if (getbtns() & 0x1) {
         initial_1 = c;
         initials_menu = 2;
-        char c = "A";
+        char c = 'A';
     }
   }
   if (initials_menu == 2) {
-    display_string(0, initial_1);
-    display_string(1, c);
-    display_string(2, initial_3);
+    display_string(0, &initial_1);
+    display_string(1, &c);
+    display_string(2, &initial_3);
 
       if (getbtns() & 0x1) {
         initial_2 = c;
         initials_menu = 3;
-        char c = "A";
+        char c = 'A';
     }
   }
   if (initials_menu == 3) {
-    display_string(0, initial_1);
-    display_string(1, initial_2);
-    display_string(2, c);
+    display_string(0, &initial_1);
+    display_string(1, &initial_2);
+    display_string(2, &c);
 
       if (getbtns() & 0x1) {
         initial_3 = c;
@@ -188,10 +188,10 @@ void initial_select(int btns) {
     }
   }
 
-  if ((getbtns() & 0x2) && (c != "Z")) {
+  if ((getbtns() & 0x2) && (c != 'Z')) {
     c++;
   }
-  if ((getbtns() & 0x4) && (c != "A")) {
+  if ((getbtns() & 0x4) && (c != 'A')) {
     c--;
   }
   
