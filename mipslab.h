@@ -88,6 +88,11 @@ void player1_win(void);
 void player2_win(void);
 void ai_win(void);
 
+//Highscore functions
+void highscore_formatting(char[], char[], char[]);
+void itoa(int, char[]);
+void reverse(char[]);
+
 
 //Menu specific variables
 extern float current_menu;
@@ -135,9 +140,15 @@ extern char initial_1;
 extern char initial_2;
 extern char initial_3;
 
+extern char highscore_temp[];
 extern int highscore_active;
 
-extern char *highscore_1;
-extern char *highscore_2;
-extern char *highscore_3;
+extern char highscore_1[];
+extern char highscore_2[];
+extern char highscore_3[];
+extern char a[];
+extern char b[];
+extern char c[];
+extern char m[];
+
 extern int initial_active;

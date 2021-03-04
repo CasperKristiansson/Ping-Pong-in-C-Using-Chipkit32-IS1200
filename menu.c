@@ -16,7 +16,7 @@ int initials_menu = 1;
 char initial_1;
 char initial_2;
 char initial_3;
-char highscore_temp[] = {'A', 0, 0, 0};
+char highscore_temp[] = {0, 0, 0, 0};
 int highscore_active = 0;
 
 
@@ -208,16 +208,17 @@ void initial_select(int btns) {
 
       if (getbtns() & 0x1) {
         initial_3 = c[0];
-        highscore_temp[0] = a[0];
-        highscore_temp[1] = b[0];
-        highscore_temp[2] = c[0];
+        initial_1 = a[0];
+        initial_2 = b[0];
         initial_active = 0;
         delay(500);
         string_clear();
+        highscore_formatting(a, b, c);
+        score_player1 = 0;
+        initial_active = 0;
     }
   }
 
  
-  
   display_update();
 }
