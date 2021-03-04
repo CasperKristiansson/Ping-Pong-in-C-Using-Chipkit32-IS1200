@@ -15,6 +15,7 @@
 
 uint8_t display[32][128];
 uint8_t oled_display[512];
+int initial_active = 0;
 
 /* Debugging paddle_splits
 int i = 0;
@@ -48,14 +49,14 @@ void labwork(void) {
     quit();
   }
 
-  if((!game_active) && (!settings_menu)) {
+  if((!game_active) && (!settings_menu) && (!highscore_active) && (!initial_active)) {
     menu(btns);
   }
   if((!game_active) && (settings_menu)) {
     menu_settings(btns);
   }
   if((!game_active) && (highscore_active)){
-    score_mode(btns);
+    highscore_menu(btns);
   }
 
   if((game_active) && (game_mode == 1)){
@@ -67,6 +68,10 @@ void labwork(void) {
   }
   if((game_active) && (game_mode == 3)){
     score_mode(btns);
+  }
+  
+  if(initial_active){
+    initial_select(btns);
   }
 
 }

@@ -77,6 +77,8 @@ void clearDisplay(void);
 //Menu functions
 void menu(int);
 void menu_settings(int);
+void highscore_menu(int);
+void initial_select(int);
 
 void goal(int);
 void quit(void);
@@ -128,14 +130,14 @@ extern int ball_yPos;
 extern int count;
 
 //Highscore specific variables
-extern char c;
 extern int initials_menu;
 extern char initial_1;
 extern char initial_2;
 extern char initial_3;
-extern char highscore_temp;
+
 extern int highscore_active;
 
 extern char *highscore_1;
 extern char *highscore_2;
 extern char *highscore_3;
+extern int initial_active;

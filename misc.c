@@ -19,6 +19,25 @@ void quit() {
   translateToImage();
   display_image(0, oled_display);
 }
+void quit_ai() {
+  delay(1000);
+  PORTE = 0x0;
+
+  ai_difficulty = 4;
+  game_active = 0;
+  game_mode = 0;
+  player_lives = 3;
+  score_player2 = 0;
+  initial_active = 1;
+  
+  string_clear();
+  clearDisplay();
+  translateToImage();
+  display_image(0, oled_display);
+  quit();
+}
+
+
 
 void reset_game() {
  /* Debugging paddle_splits

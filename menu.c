@@ -9,13 +9,16 @@
 float current_menu = 1;
 float settings_menu = 0;
 
-char c = 'A';
+char a[] = {'A', 0};
+char b[] = {'A', 0};
+char c[] = {'A', 0};
 int initials_menu = 1;
 char initial_1;
 char initial_2;
 char initial_3;
-char highscore_temp;
+char highscore_temp[] = {'A', 0, 0, 0};
 int highscore_active = 0;
+
 
 void menu(int btns) {
   delay(200);
@@ -75,7 +78,6 @@ void menu(int btns) {
     display_string(2, "> Highscore");
 
     if (getbtns() & 0x1) {
-      reset_game();
       highscore_active = 1;
       current_menu = 1;
       string_clear();
@@ -142,10 +144,13 @@ void menu_settings(int btns) {
 }
 
 void highscore_menu (int btns) {
-
+  delay(200);
+  string_clear();
   display_string(0, highscore_1);
   display_string(1, highscore_2);
   display_string(2, highscore_3);
+  display_update();
+  delay(500);
 
   if ((getbtns() & 0x1)) {
     highscore_active = 0;
@@ -154,46 +159,65 @@ void highscore_menu (int btns) {
 
 void initial_select(int btns) {
   delay(200);
-
   if (initials_menu == 1) {
-    display_string(0, &c);
-    display_string(1, &initial_2);
-    display_string(2, &initial_3);
+    display_string(0, a);
+    display_string(1, b);
+    display_string(2, c);
+     if ((getbtns() & 0x2) && (a[0] != 'Z')) {
+    a[0]++;
+  }
+  if ((getbtns() & 0x4) && (a[0] != 'A')) {
+    a[0]--;
+  }
 
       if (getbtns() & 0x1) {
-        initial_1 = c;
+        initial_1 = a[0];
+        delay(500);
+        string_clear();
         initials_menu = 2;
-        char c = 'A';
     }
   }
-  if (initials_menu == 2) {
-    display_string(0, &initial_1);
-    display_string(1, &c);
-    display_string(2, &initial_3);
+  else if (initials_menu == 2) {
+    display_string(0, a);
+    display_string(1, b);
+    display_string(2, c);
+     if ((getbtns() & 0x2) && (b[0] != 'Z')) {
+    b[0]++;
+  }
+  if ((getbtns() & 0x4) && (b[0] != 'A')) {
+    b[0]--;
+  }
 
       if (getbtns() & 0x1) {
-        initial_2 = c;
+        initial_2 = b[0];
+        delay(500);
+        string_clear();
         initials_menu = 3;
-        char c = 'A';
-    }
+      }
   }
-  if (initials_menu == 3) {
-    display_string(0, &initial_1);
-    display_string(1, &initial_2);
-    display_string(2, &c);
+  else if (initials_menu == 3) {  
+    display_string(0, a);
+    display_string(1, b);
+    display_string(2, c);
+     if ((getbtns() & 0x2) && (c[0] != 'Z')) {
+    c[0]++;
+    }
+    if ((getbtns() & 0x4) && (c[0] != 'A')) {
+    c[0]--;
+  }
 
       if (getbtns() & 0x1) {
-        initial_3 = c;
-        highscore_temp = ("%d%d%d", initial_1, initial_2, initial_3);
+        initial_3 = c[0];
+        highscore_temp[0] = a[0];
+        highscore_temp[1] = b[0];
+        highscore_temp[2] = c[0];
+        initial_active = 0;
+        delay(500);
+        string_clear();
     }
   }
 
-  if ((getbtns() & 0x2) && (c != 'Z')) {
-    c++;
-  }
-  if ((getbtns() & 0x4) && (c != 'A')) {
-    c--;
-  }
+ 
   
   display_update();
 }

@@ -52,5 +52,6 @@ void ai_win(){
   PORTESET = 511;
 
   delay(1000);
-  quit();
+  clearDisplay();
+  quit_ai();
 }
