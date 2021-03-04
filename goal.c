@@ -75,7 +75,7 @@ void lives_animation(int lives_left){
 void goal(player) {
   //For score mode
 
-  if (player == 1) {
+  if ((player == 1) && (game_mode != 3)) {
     score_player1 += 1;
     display_string(2, "Player 1 scored!");
     display_update(); 
@@ -88,7 +88,8 @@ void goal(player) {
     delay(2000);
   }
 
-  else if((player == 1) && (game_mode == 3)) {
+  if((player == 1) && (game_mode == 3)) {
+    score_player1 += 1;
     switch(score_player1){
         case 4:
             PORTESET = 1;

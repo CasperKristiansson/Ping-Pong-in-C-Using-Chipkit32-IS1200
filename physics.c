@@ -4,9 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
-
 void paddle1_physics() {
   if(paddle1_up == 1) {
     if(ball_speedy < 0) {
@@ -45,15 +42,7 @@ void paddle1_physics() {
           }
       }
   }
-  /*
-  if((ball_yPos > paddle1_yPos + 2) && (ball_yPos <= paddle1_yPos + 4)){
-      ball_speedy += -0.35;
-  }
-
-  if((ball_yPos > paddle1_yPos + 4) && (ball_yPos <= paddle1_yPos + 6)){
-      ball_speedy += 0.35;
-  }
-  */
+  
   if((ball_yPos > paddle1_yPos + 6) && (ball_yPos - ball_size < paddle1_yPos + 8)){
       if(ball_speedy == 0) {
         ball_speedy += 0.7;
@@ -85,14 +74,7 @@ void paddle2_physics() {
           }
       }
   }
-  /*
-  if((ball_yPos > paddle2_yPos + 2) && (ball_yPos <= paddle2_yPos + 4)){
-      ball_speedy += -0.35;
-  }
-  if((ball_yPos > paddle2_yPos + 4) && (ball_yPos <= paddle2_yPos + 6)){
-      ball_speedy += 0.35;
-  }
-  */
+  
   if((ball_yPos > paddle2_yPos + 5) && (ball_yPos - ball_size < paddle2_yPos + 8)){
       if(ball_speedy == 0) {
         ball_speedy += 0.7;

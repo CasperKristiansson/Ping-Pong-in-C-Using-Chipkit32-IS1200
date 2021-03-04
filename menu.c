@@ -214,8 +214,12 @@ void initial_select(int btns) {
         delay(500);
         string_clear();
         highscore_formatting(a, b, c);
+        a[0] = 'A';
+        b[0] = 'A';
+        c[0] = 'A';
         score_player1 = 0;
         initial_active = 0;
+        initials_menu = 1;
     }
   }
 

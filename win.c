@@ -50,6 +50,7 @@ void ai_win(){
   PORTE = 0;
   delay(300);
   PORTESET = 511;
+  
 
   delay(1000);
   clearDisplay();

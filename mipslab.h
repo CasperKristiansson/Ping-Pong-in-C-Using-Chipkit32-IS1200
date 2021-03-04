@@ -90,9 +90,6 @@ void ai_win(void);
 
 //Highscore functions
 void highscore_formatting(char[], char[], char[]);
-void itoa(int, char[]);
-void reverse(char[]);
-
 
 //Menu specific variables
 extern float current_menu;

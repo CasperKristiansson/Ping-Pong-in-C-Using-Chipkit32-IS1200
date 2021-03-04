@@ -34,7 +34,6 @@ void quit_ai() {
   clearDisplay();
   translateToImage();
   display_image(0, oled_display);
-  quit();
 }
 
 
@@ -84,31 +83,3 @@ void string_clear() {
   display_string(4, "");
   display_update();
 }
-
-void itoas(int n, char m[])
- {
-     int i, sign;
- 
-     if ((sign = n) < 0)  /* record sign */
-         n = -n;          /* make n positive */
-     i = 0;
-     do {       /* generate digits in reverse order */
-         m[i++] = n % 10 + '0';   /* get next digit */
-     } while ((n /= 10) > 0);     /* delete it */
-     if (sign < 0)
-         m[i++] = '-';
-     m[i] = '\0';
-     reverse(m);
- }
-
- void reverse(char m[])
- {
-     int i, j;
-     char d;
- 
-     for (i = 0, j = sizeof(m)-1; i<j; i++, j--) {
-         d = m[i];
-         m[i] = m[j];
-         m[j] = d;
-     }
- }
