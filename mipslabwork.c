@@ -54,6 +54,9 @@ void labwork(void) {
   if((!game_active) && (settings_menu)) {
     menu_settings(btns);
   }
+  if((!game_active) && (highscore_active)){
+    score_mode(btns);
+  }
 
   if((game_active) && (game_mode == 1)){
     two_player(btns);
@@ -65,4 +68,5 @@ void labwork(void) {
   if((game_active) && (game_mode == 3)){
     score_mode(btns);
   }
+
 }
